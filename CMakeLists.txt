@@ -3,4 +3,4 @@ project(UniPix C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(UniPix main.c UniPix.h Matrix.h format/PPM.h Math.h)
+add_executable(UniPix main.c UniPix.h Matrix.h format/PPM.h Math.h Image.h)

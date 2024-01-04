@@ -1,18 +1,38 @@
 #define unipix_winapi
 #include "UniPix.h"
 #include "Matrix.h"
+#include "Image.h"
 #include "format/PPM.h"
 
 #include "stdio.h"
 
 struct MyData {
-    char *buf;
+    Matrix mat;
     PBH bufCfg;
 };
 
 void myRF(DC *window, Dim dim) {
     struct MyData data = *((struct MyData *) window->userData);
-    DCPixelData(window, 0, 0, data.bufCfg, data.buf);
+    /*
+    DCPixelData(window, 0, 0, data.bufCfg, data.mat.data);
+     */
+    size_t minDimComp = dim.height;
+    if (dim.width < dim.height) {
+        minDimComp = dim.width;
+    }
+    size_t minSize = data.mat.width;
+    if (data.mat.height < data.mat.width) {
+        minSize = data.mat.height;
+    }
+    float scale = (float) minDimComp / (float) minSize;
+    Matrix *upscaled = UpscaleSimple(data.mat, scale, scale);
+    PBF pbf = (PBF) {
+            .mode = PFM_RGB,
+            .perPixel = 3
+    };
+    PBH pbh;
+    PBHInit(&pbh, upscaled->width, upscaled->height, pbf);
+    DCPixelData(window, 0, 0, pbh, upscaled->data);
 }
 
 int main() {
@@ -46,7 +66,7 @@ int main() {
     const size_t height = img.height;
 
     struct MyData data;
-    data.buf = img.data;
+    data.mat = img;
     PBF pbf = (PBF) {
         .mode = PFM_RGB,
         .perPixel = 3
