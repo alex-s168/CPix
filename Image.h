@@ -25,7 +25,7 @@ Matrix *Upscale(const Matrix mat, Matrix *dest, float sx, float sy) {
     Matrix *new;
     if (dest == NULL) {
         new = malloc(sizeof(Matrix));
-        MatrixInit(new, newWidth, newHeight, 3);
+        new->data = NULL;
     }
     else {
         new = dest;
@@ -35,6 +35,9 @@ Matrix *Upscale(const Matrix mat, Matrix *dest, float sx, float sy) {
         if (newHeight > dest->height) {
             newHeight = dest->height;
         }
+    }
+    if (new->data == NULL) {
+        MatrixInit(new, newWidth, newHeight, 3);
     }
 
     for (size_t y = 0; y < newHeight; y ++) {
@@ -75,7 +78,7 @@ Matrix *UpscaleNearest(const Matrix mat, Matrix *dest, float sx, float sy) {
     Matrix *new;
     if (dest == NULL) {
         new = malloc(sizeof(Matrix));
-        MatrixInit(new, newWidth, newHeight, 3);
+        new->data = NULL;
     }
     else {
         new = dest;
@@ -85,6 +88,9 @@ Matrix *UpscaleNearest(const Matrix mat, Matrix *dest, float sx, float sy) {
         if (newHeight > dest->height) {
             newHeight = dest->height;
         }
+    }
+    if (new->data == NULL) {
+        MatrixInit(new, newWidth, newHeight, 3);
     }
 
     for (size_t y = 0; y < newHeight; y ++) {
@@ -100,6 +106,44 @@ Matrix *UpscaleNearest(const Matrix mat, Matrix *dest, float sx, float sy) {
     }
 
     return new;
+}
+
+Matrix *Rotatef(const Matrix mat, Matrix *destIn, Matrix rot2f) {
+    Poly4f oldSize = (Poly4f) {
+            (Vec2f) { 0, 0 },
+            (Vec2f) { (float) mat.width, 0 },
+            (Vec2f) { 0, (float) mat.height },
+            (Vec2f) { (float) mat.width, (float) mat.height}
+    };
+    Poly4f transformed = Poly4fRot2f(oldSize, rot2f);
+    Vec2f bounds = Poly4fBounds(transformed);
+    size_t newW = (size_t) bounds.x;
+    size_t newH = (size_t) bounds.y;
+
+    Matrix *dest;
+    if (destIn == NULL) {
+        dest = malloc(sizeof(Matrix));
+        dest->data = NULL;
+    }
+    else {
+        dest = destIn;
+    }
+    if (dest->data == NULL) {
+        MatrixInit(dest, newW, newH, 3);
+    }
+
+    for (size_t i = 0; i < mat.width * mat.height; i ++) {
+        char *color = ((char *) mat.data) + i;
+        size_t x = i % mat.width;
+        size_t y = i / mat.height;
+        Vec2f r = Rot2f((Vec2f) { (float) x, (float) y }, rot2f);
+        char *other = MatrixOffset(*dest, (size_t) r.x, (size_t) r.y);
+        other[0] = color[0];
+        other[1] = color[1];
+        other[2] = color[2];
+    }
+
+    return dest;
 }
 
 #endif //UNIPIX_IMAGE_H

@@ -25,7 +25,10 @@ void myRF(DC *window, Dim dim) {
         minSize = data.mat.height;
     }
     float scale = (float) minDimComp / (float) minSize;
-    Matrix *upscaled = Upscale(data.mat, NULL, scale, scale);
+    Matrix *upscaled = UpscaleNearest(data.mat, NULL, scale, scale);
+    // Matrix rmat = { 0 };
+    // RotMat2f(&rmat, Radians(30));
+    // Matrix *upscaled = Rotatef(data.mat, NULL, rmat);
     PBF pbf = (PBF) {
             .mode = PFM_RGB,
             .perPixel = 3
@@ -33,6 +36,8 @@ void myRF(DC *window, Dim dim) {
     PBH pbh;
     PBHInit(&pbh, upscaled->width, upscaled->height, pbf);
     DCPixelData(window, 0, 0, pbh, upscaled->data);
+    free(upscaled->data);
+    free(upscaled);
 }
 
 int main() {

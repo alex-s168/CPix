@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <strings.h>
 
-#include "Math.h"
-
 typedef struct {
     size_t width;
     size_t height;
@@ -38,6 +36,10 @@ void MatrixRotateBlocks(Matrix mat, size_t blockLength) {
     }
     free(buff);
 }
+
+#ifndef UNIPIX_MATH_H
+#include "Math.h"
+#endif
 
 void MatrixfRemap(Matrix mat, float iMin, float iMax, float oMin, float oMax) {
     float *data = (float *) mat.data;
