@@ -2,10 +2,22 @@
 #define UNIPIX_MATH_H
 
 float Lerpf(float a, float b, float t) {
+    if (t > 1) {
+        t = 1;
+    }
+    if (t < 0) {
+        t = 0;
+    }
     return (1.0f - t) * a + b * t;
 }
 
 int Lerpi(int a, int b, float t) {
+    if (t > 1) {
+        t = 1;
+    }
+    if (t < 0) {
+        t = 0;
+    }
     return (int) Lerpf((float) a, (float) b, t);
 }
 

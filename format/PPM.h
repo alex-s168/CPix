@@ -70,9 +70,16 @@ Matrix PPM(enum PPMErr *err, FILE *file, bool autoConvertTo255, bool to4) {
     Matrix mat;
     if (to4) {
         size_t w3 = w * 3;
+        /*
         size_t fixed = FixWidth(w);
         size_t w3m = fixed * 3;
         MatrixInit(&mat, fixed, h, 3);
+         */
+        size_t mod = w3 % 4;
+        size_t w3m = w3 + mod;
+        MatrixInit(&mat, w3m, h, 1);
+        mat.width = w - (mod != 0);
+        mat.elementSize = 3;
 
         int c;
         for (size_t y = 0; y < h; y ++) {

@@ -25,7 +25,7 @@ void myRF(DC *window, Dim dim) {
         minSize = data.mat.height;
     }
     float scale = (float) minDimComp / (float) minSize;
-    Matrix *upscaled = UpscaleSimple(data.mat, scale, scale);
+    Matrix *upscaled = Upscale(data.mat, NULL, scale, scale);
     PBF pbf = (PBF) {
             .mode = PFM_RGB,
             .perPixel = 3

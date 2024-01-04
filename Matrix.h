@@ -21,7 +21,8 @@ Matrix EmptyMatrix() {
 }
 
 void MatrixInit(Matrix *mat, size_t width, size_t height, size_t elementSize) {
-    void *data = malloc(elementSize * width * height);
+    void *data = malloc(elementSize * (width * height + 1));
+    memset(data + elementSize * width * height, 0, elementSize);
     *mat = (Matrix) {.width = width, .height = height, .elementSize = elementSize, .data = data};
 }
 
@@ -67,6 +68,12 @@ void MatrixFill(Matrix mat, const void *element) {
 }
 
 void *MatrixOffset(Matrix mat, size_t x, size_t y) {
+    if (x > mat.width) {
+        x = mat.width; // the one extra 0 element
+    }
+    if (y > mat.height) {
+        y = mat.height; // the one extra 0 element
+    }
     return ((char *) mat.data) + (y * mat.width + x) * mat.elementSize;
 }
 
