@@ -1,3 +1,0 @@
-D:/gh/UniPix/cmake-build-debug/CMakeFiles/UniPix.dir
-D:/gh/UniPix/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/gh/UniPix/cmake-build-debug/CMakeFiles/rebuild_cache.dir
