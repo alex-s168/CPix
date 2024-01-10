@@ -24,17 +24,22 @@ void MatrixInit(Matrix *mat, size_t width, size_t height, size_t elementSize) {
     *mat = (Matrix) {.width = width, .height = height, .elementSize = elementSize, .data = data};
 }
 
-void MatrixRotateBlocks(Matrix mat, size_t blockLength) {
-    size_t bs = blockLength * mat.elementSize;
-    void *buff = malloc(bs);
-    for (size_t i = 0; i < (mat.width * mat.width) / blockLength; i ++) {
-        char *bb = (char *) mat.data + i * bs;
-        for (size_t e = 0; e < blockLength; e ++) {
-            memcpy(buff + (blockLength - e - 1) * mat.elementSize, bb + e * mat.elementSize, mat.elementSize);
-        }
-        memcpy(bb, buff, bs);
+static void RotateInPlace(void *data, size_t elementSize, size_t length) {
+    for (size_t e = 0; e < length; e ++) {
+        void *ePos = data + e * elementSize;
+        void *ePosNew = data + (length - e - 1) * elementSize;
+        memcpy(ePosNew, ePos, elementSize);
     }
-    free(buff);
+}
+
+void MatrixRotateBlocks(Matrix mat, size_t blockLength) {
+    size_t blocks = mat.width * mat.height / blockLength;
+    size_t blockSize = blockLength * mat.elementSize;
+    void *bp = mat.data;
+    for (size_t b = 0; b < blocks; b ++) {
+        RotateInPlace(bp, mat.elementSize, blockLength);
+        bp += blockSize;
+    }
 }
 
 #ifndef UNIPIX_MATH_H
